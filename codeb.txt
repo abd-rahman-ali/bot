@@ -1,0 +1,189 @@
+const Discord = require("discord.js")
+const intents = new Discord.Intents(32767);
+const client = new Discord.Client({ intents ,partials: ["MESSAGE", "CHANNEL"] });
+
+//test
+var serverid = 939171009154646036n
+//Text Channel IDs
+var wachat = 940326760636088452n
+var supp = 940326803195695114n
+//voice channels
+var lobby = 939446118629134376n
+var pvp = 939270289274077254n
+var party = 939270335533043792n
+var raids = 939270366533136404n
+var privat = 939270244571185182n
+//catid
+catid = 939269922700288030n
+//room names
+var lobbyname = "🟢「𝐋𝐨𝐛𝐛𝐲」"
+var pvpname = "⚔️「𝐏𝐯𝐏」"
+var partyname = "🧢「𝐏𝐚𝐫𝐭𝐲」"
+var privatname = "🔒「𝐏𝐫𝐢𝐯𝐚𝐭𝐞」"
+var raidsname = "👾「𝐑𝐚𝐢𝐝𝐬」"
+//temp channels array
+var tempChannels = []
+var memberj
+
+
+
+client.on("ready", () => {
+    console.log(`Ready! Logged in as ${client.user.tag}`)
+    client.user.setActivity(`Lost Ark`, { type: "PLAYING" })
+})
+
+client.on("guildMemberAdd", async (member) => {
+  try {
+  var wmsg = `**Welcome to Our Humble Discord "LOST ARAB - EU" Made for Arabs Who Play Lost Ark**\n`
+  wmsg += `**اهلا بك في سيرفرنا المتواضع  للعرب الذين يلعبون لوست ارك**\n\n`
+  wmsg += `➡️ Make Sure to Read The Server Rules and Guidelines: <#939268022621859850>\n`
+  wmsg += `➡️  To Choose and Assign Your Lost Ark Roles. Check <#939268077349122128>\n\n`
+  wmsg += ` <#939268022621859850> يرجى التأكد من قراءة القواعد والإرشادات ⬅️\n`
+  wmsg += `<#939268077349122128> لاختيار وتعيين الأدوار المرتبطه باللعبه ⬅️\n`
+  await member.send(wmsg)
+  }
+  catch(err) {
+    console.log(err.message)
+  }
+})
+
+client.on("messageCreate", message => {
+try {
+  //self message
+  if (message.author.bot) return;
+  //ping
+  if(message.content === "ping") {
+      message.reply("pong")
+  }
+  //get DMs
+  if(message.channel.type === 'DM'){
+    let dmch = client.channels.cache.get(wachat.toString())
+    dmch.send(msgstr(message)+"*From* <@"+message.author.id + "> ID: " +message.author.id)
+  }
+  //reply
+  if(message.content.startsWith('re!') && message.channel.id == wachat){
+    memo = message.content.split(' ', 2)
+    msg = message.content.substring(message.content.indexOf(" ") + memo[1].length+2)
+    message.content = msg
+    user = message.guild.members.cache.get(memo[1])
+    user.send(msgstr(message))
+    message.reply("*Sent to* <@"+ user.id+'> ID: '+ user.id )
+  }
+  //change wachat
+  if(message.content.startsWith('chat!') && message.channel.id == supp){
+    memo = message.content.split(' ', 2)
+    wachat = memo[1]
+    console.log(typeof(wachat))
+    message.reply('set to <#'+wachat+'>')
+  }
+  //announcment
+  if(message.content.startsWith('say!') && message.channel.id == supp){
+    memo = message.content.split(' ', 2)
+    msg = message.content.substring(message.content.indexOf(" ") + memo[1].length+2)
+    message.content = msg
+    let anch = client.channels.cache.get(memo[1].toString())
+    anch.send(msgstr(message))
+    message.reply("*Sent to* <#"+ anch.id+'>')
+  }
+}
+  catch(err) {
+    console.log(err.message)
+  }
+})
+
+//on voice state update
+client.on("voiceStateUpdate",async function(oldmember, newmember){
+  try{
+  if(newmember.channel !== null){
+    memberj = newmember
+    //console.log("---1---")
+  }else if(oldmember.channel !== null){
+      memberj = oldmember
+      //console.log("---2---")
+    }else{
+      memberj = 0
+      }
+  if(memberj.channel.id == lobby){
+    let tempch = createChannel(memberj.guild,lobbyname,catid)
+  }
+  if(memberj.channel.id == pvp){
+    let tempch = createChannel(memberj.guild,pvpname,catid,3)
+  }
+  if(memberj.channel.id == party){
+    let tempch = createChannel(memberj.guild,partyname,catid,4)
+  }
+  if(memberj.channel.id == raids){
+    let tempch = createChannel(memberj.guild,raidsname,catid,8)
+  }
+  if(memberj.channel.id == privat){
+    let tempch = createChannel(memberj.guild,privatname,catid,2)
+  }
+  //check for it
+  for(i = 0; i < tempChannels.length; i++){
+    if (JSON.stringify(tempChannels[i].members) === "[]"){
+      tempChannels[i].delete()
+      tempChannels.splice(i,1)
+    }
+  }
+  }
+  catch(err) {
+    console.log(err.message)
+  }
+});
+
+client.on("channelCreate",(channel) =>{
+  try {
+  //console.log(channel.
+  if(memberj.channel.id == lobby){
+    memberj.setChannel(channel)
+    tempChannels.push(channel)
+  }
+  if(memberj.channel.id == pvp){
+    memberj.setChannel(channel)
+    tempChannels.push(channel)
+  }
+  if(memberj.channel.id == party){
+    memberj.setChannel(channel)
+    tempChannels.push(channel)
+  }
+  if(memberj.channel.id == raids){
+    memberj.setChannel(channel)
+    tempChannels.push(channel)
+  }
+  if(memberj.channel.id == privat){
+    memberj.setChannel(channel)
+    tempChannels.push(channel)
+  }
+  //console.log(channel.members)
+  
+  }
+  catch(err) {
+    console.log(err.message)
+  }
+})
+
+//async function to create a channel
+async function createChannel(guild,name,category,limit) {  
+  let temp = await guild.channels.create(name, {type: 'GUILD_VOICE',}).then((channel) => {channel.setParent(category.toString()),channel.setUserLimit(limit)})
+  //console.log(tempo1.id)
+  return temp
+  }
+
+
+//message to string function
+function msgstr(message){
+  const attc = []
+    if (message.attachments.size > 0) {
+        message.attachments.forEach(Attachment => {
+            attc.push(Attachment.url)
+        })
+    }
+    memo= message.content + "\n"
+    for (i=0;i<attc.length;i++){
+      memo+= attc[i] + "\n"
+    }
+    //memo += "*From* <@"+message.author.id + "> ID: " +message.author.id
+  return memo
+}
+
+client.login(mySecret)
